@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mon entreprise peut-elle fonctionner 30 jours sans moi ? - JM Conseils</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    color: #222;
+}
+
+.tool {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 30px;
+}
+
+.intro {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
+
+.progress {
+    height: 8px;
+    background: #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0;
+    background: #222;
+    transition: width .3s ease;
+}
+
+.category {
+    margin-top: 32px;
+}
+
+.category h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.question {
+    padding: 18px;
+    margin-bottom: 12px;
+    background: #f6f6f6;
+    border-radius: 10px;
+}
+
+.question-text {
+    font-weight: 600;
+    line-height: 1.45;
+    margin-bottom: 12px;
+}
+
+.answers {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.answers label {
+    flex: 1;
+    min-width: 160px;
+    cursor: pointer;
+}
+
+.answers input {
+    display: none;
+}
+
+.answers span {
+    display: block;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    background: white;
+    transition: .2s;
+}
+
+.answers input:checked + span {
+    background: #222;
+    color: white;
+    border-color: #222;
+}
+
+button {
+    width: 100%;
+    margin-top: 28px;
+    padding: 16px;
+    border: 0;
+    border-radius: 8px;
+    background: #222;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#results {
+    display: none;
+    margin-top: 35px;
+}
+
+.hero {
+    padding: 28px;
+    border-radius: 14px;
+    text-align: center;
+    background: #f3f3f3;
+}
+
+.hero-label {
+    color: #666;
+}
+
+.hero-score {
+    font-size: 54px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.hero-text {
+    line-height: 1.55;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 22px;
+}
+
+.card {
+    padding: 18px;
+    border-radius: 10px;
+    background: #f5f5f5;
+}
+
+.card-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.card-value {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.priority {
+    padding: 17px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.priority-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.priority-text {
+    color: #555;
+    line-height: 1.5;
+}
+
+.green {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+.orange {
+    background: #fff3e0;
+    color: #8a4b00;
+}
+
+.red {
+    background: #ffebee;
+    color: #b71c1c;
+}
+
+.disclaimer {
+    margin-top: 25px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #777;
+}
+
+@media(max-width: 650px) {
+    .tool {
+        margin: 10px;
+        padding: 20px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .answers {
+        flex-direction: column;
+    }
+
+    .answers label {
+        min-width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="tool">
+
+<h1>Mon entreprise peut-elle fonctionner 30 jours sans moi ?</h1>
+
+<p class="intro">
+Ce diagnostic vous aide à mesurer à quel point votre entreprise dépend encore
+de vous pour vendre, produire, décider, payer et gérer les imprévus.
+Répondez selon la situation réelle de votre entreprise aujourd'hui.
+</p>
+
+<div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<form id="assessment"></form>
+
+<button id="resultButton">Voir mon diagnostic</button>
+
+<div id="results">
+
+    <div class="hero" id="hero">
+        <div class="hero-label">Indice d'autonomie estimé</div>
+        <div class="hero-score" id="score"></div>
+        <div class="hero-text" id="summary"></div>
+    </div>
+
+    <h2 style="margin-top:30px;">Autonomie par domaine</h2>
+
+    <div class="grid" id="categoryResults"></div>
+
+    <h2 style="margin-top:30px;">Vos 3 priorités</h2>
+
+    <div id="priorities"></div>
+
+    <p class="disclaimer">
+        Ce diagnostic est un outil indicatif de réflexion organisationnelle.
+        Il ne garantit pas qu'une entreprise puisse réellement fonctionner sans
+        son dirigeant pendant 30 jours. Les situations exceptionnelles,
+        obligations légales et spécificités sectorielles doivent également être prises en compte.
+    </p>
+
+</div>
+
+</div>
+
+<script>
+
+const categories = [
+{
+    name: "Commercial",
+    questions: [
+        {
+            text: "Les principaux clients peuvent-ils être suivis sans intervention de votre part ?",
+            action: "Transférer progressivement la relation avec les principaux clients à une deuxième personne."
+        },
+        {
+            text: "Les devis peuvent-ils être préparés, validés et envoyés sans vous ?",
+            action: "Formaliser les règles de prix, de remise et de validation des devis."
+        },
+        {
+            text: "Le suivi des prospects et des relances commerciales continue-t-il lorsque vous êtes absent ?",
+            action: "Mettre en place une procédure et un responsable clair pour le suivi commercial."
+        },
+        {
+            text: "Les conditions commerciales importantes sont-elles documentées et accessibles à l'équipe ?",
+            action: "Documenter les conditions, exceptions et pratiques commerciales essentielles."
+        }
+    ]
+},
+{
+    name: "Opérations",
+    questions: [
+        {
+            text: "La production ou la prestation peut-elle fonctionner sans votre présence quotidienne ?",
+            action: "Identifier les opérations qui nécessitent encore votre intervention et créer un relais."
+        },
+        {
+            text: "Une autre personne peut-elle gérer les problèmes opérationnels imprévus ?",
+            action: "Créer une procédure d'escalade et donner un niveau d'autorité clair à un responsable."
+        },
+        {
+            text: "Les principaux processus de l'entreprise sont-ils documentés ?",
+            action: "Documenter en priorité les processus critiques et les situations récurrentes."
+        },
+        {
+            text: "Les fournisseurs, commandes et approvisionnements peuvent-ils être gérés sans vous ?",
+            action: "Déléguer les relations fournisseurs et formaliser les règles d'approvisionnement."
+        }
+    ]
+},
+{
+    name: "Finance",
+    questions: [
+        {
+            text: "Les factures, paiements et échéances peuvent-ils être gérés sans votre présence ?",
+            action: "Mettre en place des délégations financières et un calendrier des échéances."
+        },
+        {
+            text: "Une autre personne suit-elle la trésorerie et les retards de paiement ?",
+            action: "Désigner un responsable du suivi de trésorerie et des créances clients."
+        },
+        {
+            text: "Une personne de confiance dispose-t-elle des accès nécessaires en cas d'urgence ?",
+            action: "Sécuriser les accès critiques et prévoir une procédure de continuité."
+        },
+        {
+            text: "Les principaux indicateurs financiers peuvent-ils être compris sans votre intervention ?",
+            action: "Créer un tableau de bord financier simple et documenter son interprétation."
+        }
+    ]
+},
+{
+    name: "Management & décisions",
+    questions: [
+        {
+            text: "Vos responsables savent-ils quelles décisions ils peuvent prendre sans vous consulter ?",
+            action: "Définir clairement les niveaux de décision et les limites d'autorité."
+        },
+        {
+            text: "L'équipe connaît-elle les priorités à suivre pendant plusieurs semaines sans vous ?",
+            action: "Formaliser des objectifs et priorités suffisamment clairs pour fonctionner sans arbitrage quotidien."
+        },
+        {
+            text: "Les conflits, absences ou problèmes RH courants peuvent-ils être gérés sans vous ?",
+            action: "Créer des règles de gestion RH et identifier un référent capable de les appliquer."
+        },
+        {
+            text: "Existe-t-il un responsable capable de coordonner l'entreprise pendant votre absence ?",
+            action: "Préparer un véritable relais de direction pour les périodes d'absence."
+        }
+    ]
+},
+{
+    name: "Informations & accès",
+    questions: [
+        {
+            text: "Les documents et informations importants sont-ils centralisés et accessibles ?",
+            action: "Centraliser les documents critiques dans un espace partagé et structuré."
+        },
+        {
+            text: "Les mots de passe et accès essentiels disposent-ils d'une solution de continuité sécurisée ?",
+            action: "Mettre en place une gestion sécurisée des accès et des droits de secours."
+        },
+        {
+            text: "Les échéances importantes sont-elles visibles dans un calendrier partagé ?",
+            action: "Créer un calendrier des obligations, échéances et tâches récurrentes."
+        },
+        {
+            text: "Chaque responsabilité critique dispose-t-elle d'au moins une personne de remplacement ?",
+            action: "Identifier un remplaçant pour chaque fonction ou responsabilité critique."
+        }
+    ]
+}
+];
+
+const form = document.getElementById("assessment");
+
+let questionIndex = 0;
+
+categories.forEach((category, categoryIndex) => {
+
+    const section = document.createElement("div");
+    section.className = "category";
+
+    const title = document.createElement("h2");
+    title.textContent = category.name;
+
+    section.appendChild(title);
+
+    category.questions.forEach((question, qIndex) => {
+
+        const id = "q_" + categoryIndex + "_" + qIndex;
+
+        const block = document.createElement("div");
+        block.className = "question";
+
+        block.innerHTML = `
+            <div class="question-text">${question.text}</div>
+
+            <div class="answers">
+
+                <label>
+                    <input type="radio" name="${id}" value="0">
+                    <span>Oui, sans moi</span>
+                </label>
+
+                <label>
+                    <input type="radio" name="${id}" value="1">
+                    <span>Partiellement</span>
+                </label>
+
+                <label>
+                    <input type="radio" name="${id}" value="2">
+                    <span>Non, cela dépend de moi</span>
+                </label>
+
+            </div>
+        `;
+
+        section.appendChild(block);
+
+        questionIndex++;
+    });
+
+    form.appendChild(section);
+});
+
+const totalQuestions = questionIndex;
+
+function updateProgress() {
+
+    const answered =
+        form.querySelectorAll('input[type="radio"]:checked').length;
+
+    const percentage =
+        (answered / totalQuestions) * 100;
+
+    document.getElementById("progressBar").style.width =
+        percentage + "%";
+}
+
+form.addEventListener("change", updateProgress);
+
+document.getElementById("resultButton").addEventListener("click", function() {
+
+    const answered =
+        form.querySelectorAll('input[type="radio"]:checked').length;
+
+    if (answered !== totalQuestions) {
+        alert("Veuillez répondre aux 20 questions avant d'afficher votre diagnostic.");
+        return;
+    }
+
+    let totalDependency = 0;
+
+    const categoryScores = [];
+    const risks = [];
+
+    categories.forEach((category, categoryIndex) => {
+
+        let categoryDependency = 0;
+
+        category.questions.forEach((question, qIndex) => {
+
+            const name =
+                "q_" + categoryIndex + "_" + qIndex;
+
+            const answer =
+                Number(form.querySelector('input[name="' + name + '"]:checked').value);
+
+            categoryDependency += answer;
+            totalDependency += answer;
+
+            if (answer > 0) {
+                risks.push({
+                    score: answer,
+                    category: category.name,
+                    text: question.text,
+                    action: question.action
+                });
+            }
+        });
+
+        const max =
+            category.questions.length * 2;
+
+        const autonomy =
+            Math.round(100 - (categoryDependency / max * 100));
+
+        categoryScores.push({
+            name: category.name,
+            autonomy: autonomy
+        });
+    });
+
+    const maxTotal =
+        totalQuestions * 2;
+
+    const autonomyScore =
+        Math.round(100 - (totalDependency / maxTotal * 100));
+
+    const hero =
+        document.getElementById("hero");
+
+    hero.className = "hero";
+
+    let summary = "";
+
+    if (autonomyScore >= 80) {
+
+        hero.classList.add("green");
+
+        summary =
+        "Votre organisation semble disposer d'un bon niveau d'autonomie pour gérer les opérations courantes sans votre présence. Vérifiez néanmoins les quelques points de dépendance encore identifiés.";
+
+    } else if (autonomyScore >= 60) {
+
+        hero.classList.add("orange");
+
+        summary =
+        "Votre entreprise pourrait probablement continuer à fonctionner, mais plusieurs décisions ou processus risquent encore de revenir rapidement vers vous.";
+
+    } else {
+
+        hero.classList.add("red");
+
+        summary =
+        "Votre entreprise présente actuellement une dépendance importante à votre présence. Une absence prolongée pourrait rapidement créer des blocages opérationnels, commerciaux ou décisionnels.";
+    }
+
+    document.getElementById("score").textContent =
+        autonomyScore + " / 100";
+
+    document.getElementById("summary").textContent =
+        summary;
+
+    const categoryContainer =
+        document.getElementById("categoryResults");
+
+    categoryContainer.innerHTML = "";
+
+    categoryScores.forEach(item => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "card";
+
+        card.innerHTML = `
+            <div class="card-label">${item.name}</div>
+            <div class="card-value">${item.autonomy} / 100</div>
+        `;
+
+        categoryContainer.appendChild(card);
+    });
+
+    risks.sort((a,b) => b.score - a.score);
+
+    const priorities =
+        document.getElementById("priorities");
+
+    priorities.innerHTML = "";
+
+    risks.slice(0,3).forEach((risk, index) => {
+
+        const block =
+            document.createElement("div");
+
+        block.className =
+            "priority";
+
+        block.innerHTML = `
+            <div class="priority-title">
+                ${index + 1}. ${risk.category}
+            </div>
+
+            <div class="priority-text">
+                <strong>Point de dépendance :</strong>
+                ${risk.text}
+                <br><br>
+                <strong>Première action possible :</strong>
+                ${risk.action}
+            </div>
+        `;
+
+        priorities.appendChild(block);
+    });
+
+    document.getElementById("results").style.display =
+        "block";
+
+    document.getElementById("results").scrollIntoView({
+        behavior: "smooth"
+    });
+});
+
+</script>
+
+</body>
+</html>
