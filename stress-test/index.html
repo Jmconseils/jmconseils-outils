@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stress Test PME - JM Conseils</title>
+
+<style>
+* { box-sizing:border-box; }
+
+body {
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f7f7f7;
+    color:#222;
+}
+
+.calculator {
+    max-width:850px;
+    margin:30px auto;
+    padding:28px;
+    background:white;
+    border-radius:16px;
+    box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+
+h1 { margin-top:0; }
+
+.intro {
+    color:#666;
+    line-height:1.5;
+    margin-bottom:25px;
+}
+
+.field {
+    margin-bottom:19px;
+}
+
+label {
+    display:block;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.help {
+    color:#777;
+    font-size:13px;
+    margin-bottom:7px;
+}
+
+input, select {
+    width:100%;
+    padding:13px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:17px;
+}
+
+button {
+    width:100%;
+    padding:15px;
+    border:0;
+    border-radius:8px;
+    background:#222;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#results {
+    display:none;
+    margin-top:30px;
+}
+
+.grid {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.card {
+    background:#f5f5f5;
+    padding:18px;
+    border-radius:10px;
+}
+
+.label {
+    font-size:13px;
+    color:#666;
+    margin-bottom:5px;
+}
+
+.value {
+    font-size:24px;
+    font-weight:bold;
+}
+
+.status {
+    margin-top:18px;
+    padding:18px;
+    border-radius:10px;
+    line-height:1.5;
+}
+
+.green { background:#e8f5e9; color:#1b5e20; }
+.orange { background:#fff3e0; color:#8a4b00; }
+.red { background:#ffebee; color:#b71c1c; }
+
+.disclaimer {
+    margin-top:20px;
+    font-size:12px;
+    color:#777;
+    line-height:1.5;
+}
+
+@media(max-width:650px) {
+    .calculator { margin:10px; padding:20px; }
+    .grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+<h1>Stress-testez votre PME</h1>
+
+<p class="intro">
+Mesurez l'impact d'une baisse de chiffre d'affaires sur votre résultat
+et estimez combien de temps votre trésorerie pourrait absorber les pertes.
+</p>
+
+<div class="field">
+<label>Chiffre d'affaires annuel</label>
+<input id="revenue" type="number" min="0" placeholder="Ex. 750000">
+</div>
+
+<div class="field">
+<label>Charges variables annuelles</label>
+<input id="variable" type="number" min="0" placeholder="Ex. 300000">
+</div>
+
+<div class="field">
+<label>Charges fixes annuelles</label>
+<input id="fixed" type="number" min="0" placeholder="Ex. 390000">
+</div>
+
+<div class="field">
+<label>Trésorerie disponible</label>
+<div class="help">
+Liquidités réellement disponibles pour absorber une éventuelle perte.
+</div>
+<input id="cash" type="number" min="0" placeholder="Ex. 80000">
+</div>
+
+<div class="field">
+<label>Scénario de baisse du chiffre d'affaires</label>
+
+<select id="shock">
+<option value="0.05">CA -5 %</option>
+<option value="0.10" selected>CA -10 %</option>
+<option value="0.15">CA -15 %</option>
+<option value="0.20">CA -20 %</option>
+<option value="0.30">CA -30 %</option>
+</select>
+</div>
+
+<button onclick="calculate()">Lancer le stress-test</button>
+
+<div id="results">
+
+<h2>Résultat du scénario</h2>
+
+<div class="grid">
+
+<div class="card">
+<div class="label">Résultat actuel estimé</div>
+<div class="value" id="currentResult"></div>
+</div>
+
+<div class="card">
+<div class="label">CA après choc</div>
+<div class="value" id="stressRevenue"></div>
+</div>
+
+<div class="card">
+<div class="label">Résultat après choc</div>
+<div class="value" id="stressResult"></div>
+</div>
+
+<div class="card">
+<div class="label">Variation du résultat</div>
+<div class="value" id="resultChange"></div>
+</div>
+
+<div class="card">
+<div class="label">Trésorerie disponible</div>
+<div class="value" id="cashValue"></div>
+</div>
+
+<div class="card">
+<div class="label">Couverture estimée</div>
+<div class="value" id="runway"></div>
+</div>
+
+</div>
+
+<div id="status" class="status"></div>
+
+<p class="disclaimer">
+Cette simulation suppose que votre taux de charges variables reste proportionnel
+au chiffre d'affaires et que vos charges fixes restent constantes.
+Elle constitue une estimation indicative et non un plan de trésorerie complet.
+</p>
+
+</div>
+
+</div>
+
+<script>
+
+function euro(value) {
+    return new Intl.NumberFormat('fr-BE',{
+        style:'currency',
+        currency:'EUR',
+        maximumFractionDigits:0
+    }).format(value);
+}
+
+function calculate() {
+
+    const revenue = Number(document.getElementById('revenue').value);
+    const variable = Number(document.getElementById('variable').value);
+    const fixed = Number(document.getElementById('fixed').value);
+    const cash = Number(document.getElementById('cash').value);
+    const shock = Number(document.getElementById('shock').value);
+
+    if (revenue <= 0) {
+        alert("Veuillez renseigner votre chiffre d'affaires.");
+        return;
+    }
+
+    if (variable >= revenue) {
+        alert("Les charges variables doivent être inférieures au chiffre d'affaires.");
+        return;
+    }
+
+    const variableRate = variable / revenue;
+
+    const currentResult =
+        revenue - variable - fixed;
+
+    const stressRevenue =
+        revenue * (1 - shock);
+
+    const stressVariable =
+        stressRevenue * variableRate;
+
+    const stressResult =
+        stressRevenue - stressVariable - fixed;
+
+    const resultChange =
+        stressResult - currentResult;
+
+    let runwayText = "Non applicable";
+
+    if (stressResult < 0) {
+
+        const monthlyLoss =
+            Math.abs(stressResult) / 12;
+
+        const runway =
+            cash / monthlyLoss;
+
+        runwayText =
+            runway.toFixed(1) + " mois";
+    }
+
+    document.getElementById('currentResult').textContent =
+        euro(currentResult);
+
+    document.getElementById('stressRevenue').textContent =
+        euro(stressRevenue);
+
+    document.getElementById('stressResult').textContent =
+        euro(stressResult);
+
+    document.getElementById('resultChange').textContent =
+        euro(resultChange);
+
+    document.getElementById('cashValue').textContent =
+        euro(cash);
+
+    document.getElementById('runway').textContent =
+        runwayText;
+
+    const status =
+        document.getElementById('status');
+
+    status.className = "status";
+
+    if (stressResult >= 0) {
+
+        status.classList.add("green");
+
+        status.innerHTML =
+        "<strong>Votre entreprise resterait rentable dans ce scénario.</strong><br>" +
+        "La baisse de chiffre d'affaires dégrade votre résultat, mais ne fait pas passer l'entreprise sous le seuil de rentabilité.";
+
+    } else {
+
+        const monthlyLoss =
+            Math.abs(stressResult) / 12;
+
+        const runway =
+            cash / monthlyLoss;
+
+        if (runway >= 6) {
+
+            status.classList.add("orange");
+
+            status.innerHTML =
+            "<strong>Votre entreprise deviendrait déficitaire.</strong><br>" +
+            "Votre trésorerie permettrait toutefois d'absorber environ " +
+            runway.toFixed(1) +
+            " mois de pertes au rythme simulé.";
+
+        } else {
+
+            status.classList.add("red");
+
+            status.innerHTML =
+            "<strong>Ce scénario présente un risque important.</strong><br>" +
+            "Votre entreprise deviendrait déficitaire et votre trésorerie disponible couvrirait environ " +
+            runway.toFixed(1) +
+            " mois de pertes au rythme simulé.";
+        }
+    }
+
+    document.getElementById('results').style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
