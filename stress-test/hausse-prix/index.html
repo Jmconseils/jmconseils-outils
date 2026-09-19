@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Hausse de prix : combien de clients puis-je perdre ? - JM Conseils</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    color: #222;
+}
+
+.calculator {
+    max-width: 850px;
+    margin: 30px auto;
+    padding: 28px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 30px;
+}
+
+.intro {
+    color: #666;
+    line-height: 1.55;
+    margin-bottom: 28px;
+}
+
+.field {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.help {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 7px;
+    line-height: 1.4;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 17px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background: #222;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: .92;
+}
+
+#results {
+    display: none;
+    margin-top: 32px;
+}
+
+.hero-result {
+    background: #f2f2f2;
+    padding: 26px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.hero-label {
+    color: #666;
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.hero-value {
+    font-size: 44px;
+    font-weight: bold;
+}
+
+.hero-text {
+    margin-top: 9px;
+    line-height: 1.5;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.card {
+    background: #f5f5f5;
+    padding: 18px;
+    border-radius: 10px;
+}
+
+.card-label {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.card-value {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.scenario {
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.scenario h3 {
+    margin-top: 0;
+}
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.slider-row input {
+    flex: 1;
+}
+
+.slider-value {
+    min-width: 70px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.status {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 10px;
+    line-height: 1.55;
+}
+
+.green {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+.orange {
+    background: #fff3e0;
+    color: #8a4b00;
+}
+
+.red {
+    background: #ffebee;
+    color: #b71c1c;
+}
+
+.disclaimer {
+    margin-top: 22px;
+    color: #777;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+@media(max-width:650px) {
+    .calculator {
+        margin: 10px;
+        padding: 20px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-value {
+        font-size: 36px;
+    }
+
+    .slider-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+<h1>J'augmente mes prix : combien de clients puis-je perdre ?</h1>
+
+<p class="intro">
+Une hausse de prix peut augmenter votre rentabilité même si elle entraîne
+une baisse des ventes. Découvrez jusqu'où votre volume peut diminuer avant
+que votre marge totale devienne inférieure à celle d'aujourd'hui.
+</p>
+
+<div class="field">
+    <label>Chiffre d'affaires annuel actuel</label>
+    <input id="revenue" type="number" min="0" placeholder="Ex. 500000">
+</div>
+
+<div class="field">
+    <label>Charges variables annuelles</label>
+    <div class="help">
+        Achats, matières premières, commissions, sous-traitance et autres coûts
+        qui évoluent directement avec vos ventes.
+    </div>
+    <input id="variable" type="number" min="0" placeholder="Ex. 300000">
+</div>
+
+<div class="field">
+    <label>Hausse de prix envisagée</label>
+    <div class="help">
+        Ex. saisissez 10 pour une augmentation moyenne de 10 %.
+    </div>
+    <input id="increase" type="number" min="0" step="0.1" placeholder="Ex. 10">
+</div>
+
+<button id="calculateButton">Tester ma hausse de prix</button>
+
+<div id="results">
+
+    <div class="hero-result">
+
+        <div class="hero-label">
+            Baisse maximale de volume avant de perdre de la marge
+        </div>
+
+        <div class="hero-value" id="maxLoss"></div>
+
+        <div class="hero-text" id="heroText"></div>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="card-label">Marge sur coûts variables actuelle</div>
+            <div class="card-value" id="currentMargin"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-label">Taux de marge actuel</div>
+            <div class="card-value" id="marginRate"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-label">Prix moyen après augmentation</div>
+            <div class="card-value" id="priceEffect"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-label">Volume minimum à conserver</div>
+            <div class="card-value" id="volumeRequired"></div>
+        </div>
+
+    </div>
+
+    <div class="scenario">
+
+        <h3>Et si vous perdez réellement des ventes ?</h3>
+
+        <p>
+            Faites varier la perte de volume pour mesurer l'impact de votre hausse de prix.
+        </p>
+
+        <div class="slider-row">
+
+            <input
+                id="lossSlider"
+                type="range"
+                min="0"
+                max="50"
+                value="10"
+                step="1"
+            >
+
+            <div class="slider-value">
+                <span id="lossValue">10</span> %
+            </div>
+
+        </div>
+
+        <div class="grid" style="margin-top:20px">
+
+            <div class="card">
+                <div class="card-label">Nouveau chiffre d'affaires estimé</div>
+                <div class="card-value" id="newRevenue"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Nouvelle marge estimée</div>
+                <div class="card-value" id="newMargin"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Variation de la marge</div>
+                <div class="card-value" id="marginChange"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Variation en %</div>
+                <div class="card-value" id="marginChangePercent"></div>
+            </div>
+
+        </div>
+
+        <div id="status" class="status"></div>
+
+    </div>
+
+    <p class="disclaimer">
+        Cette simulation suppose que la hausse de prix s'applique de manière moyenne
+        à votre activité, que vos coûts variables unitaires restent constants et que
+        la baisse des ventes est proportionnelle. Le nombre de clients réellement
+        perdus peut différer si certains clients représentent une part plus importante
+        du chiffre d'affaires que d'autres.
+    </p>
+
+</div>
+
+</div>
+
+<script>
+
+const revenueInput = document.getElementById("revenue");
+const variableInput = document.getElementById("variable");
+const increaseInput = document.getElementById("increase");
+
+const calculateButton = document.getElementById("calculateButton");
+
+const slider = document.getElementById("lossSlider");
+
+let currentRevenue = 0;
+let currentVariable = 0;
+let priceIncrease = 0;
+let currentContribution = 0;
+let maxLossRate = 0;
+
+function euro(value) {
+    return new Intl.NumberFormat("fr-BE", {
+        style: "currency",
+        currency: "EUR",
+        maximumFractionDigits: 0
+    }).format(value);
+}
+
+function calculateMain() {
+
+    currentRevenue = Number(revenueInput.value);
+    currentVariable = Number(variableInput.value);
+    priceIncrease = Number(increaseInput.value) / 100;
+
+    if (currentRevenue <= 0) {
+        alert("Veuillez renseigner votre chiffre d'affaires.");
+        return;
+    }
+
+    if (currentVariable < 0 || currentVariable >= currentRevenue) {
+        alert("Les charges variables doivent être positives et inférieures au chiffre d'affaires.");
+        return;
+    }
+
+    if (priceIncrease <= 0) {
+        alert("Veuillez renseigner une hausse de prix supérieure à 0 %.");
+        return;
+    }
+
+    currentContribution =
+        currentRevenue - currentVariable;
+
+    const newRevenueAtSameVolume =
+        currentRevenue * (1 + priceIncrease);
+
+    const newContributionAtSameVolume =
+        newRevenueAtSameVolume - currentVariable;
+
+    const retainedVolume =
+        currentContribution / newContributionAtSameVolume;
+
+    maxLossRate =
+        1 - retainedVolume;
+
+    const marginRate =
+        currentContribution / currentRevenue;
+
+    document.getElementById("maxLoss").textContent =
+        (maxLossRate * 100).toFixed(1) + " %";
+
+    document.getElementById("heroText").innerHTML =
+        "Avec une hausse moyenne de <strong>" +
+        (priceIncrease * 100).toFixed(1) +
+        " %</strong>, vous pourriez perdre environ <strong>" +
+        (maxLossRate * 100).toFixed(1) +
+        " % de votre volume de ventes</strong> avant que votre marge totale devienne inférieure à celle d'aujourd'hui.";
+
+    document.getElementById("currentMargin").textContent =
+        euro(currentContribution);
+
+    document.getElementById("marginRate").textContent =
+        (marginRate * 100).toFixed(1) + " %";
+
+    document.getElementById("priceEffect").textContent =
+        "+" + (priceIncrease * 100).toFixed(1) + " %";
+
+    document.getElementById("volumeRequired").textContent =
+        (retainedVolume * 100).toFixed(1) + " %";
+
+    document.getElementById("results").style.display =
+        "block";
+
+    updateScenario();
+}
+
+function updateScenario() {
+
+    if (!currentRevenue) {
+        return;
+    }
+
+    const lossRate =
+        Number(slider.value) / 100;
+
+    document.getElementById("lossValue").textContent =
+        slider.value;
+
+    const retainedVolume =
+        1 - lossRate;
+
+    const newRevenue =
+        currentRevenue *
+        (1 + priceIncrease) *
+        retainedVolume;
+
+    const newVariableCosts =
+        currentVariable *
+        retainedVolume;
+
+    const newContribution =
+        newRevenue - newVariableCosts;
+
+    const marginDifference =
+        newContribution - currentContribution;
+
+    const marginDifferencePercent =
+        marginDifference / currentContribution;
+
+    document.getElementById("newRevenue").textContent =
+        euro(newRevenue);
+
+    document.getElementById("newMargin").textContent =
+        euro(newContribution);
+
+    document.getElementById("marginChange").textContent =
+        (marginDifference >= 0 ? "+" : "") +
+        euro(marginDifference);
+
+    document.getElementById("marginChangePercent").textContent =
+        (marginDifferencePercent >= 0 ? "+" : "") +
+        (marginDifferencePercent * 100).toFixed(1) +
+        " %";
+
+    const status =
+        document.getElementById("status");
+
+    status.className =
+        "status";
+
+    if (lossRate < maxLossRate * 0.75) {
+
+        status.classList.add("green");
+
+        status.innerHTML =
+            "<strong>La hausse de prix reste favorable dans ce scénario.</strong><br>" +
+            "Malgré la perte de volume simulée, votre marge totale serait supérieure à votre situation actuelle.";
+
+    } else if (lossRate <= maxLossRate) {
+
+        status.classList.add("orange");
+
+        status.innerHTML =
+            "<strong>Vous approchez de votre point d'équilibre.</strong><br>" +
+            "La hausse de prix reste encore favorable, mais une perte de volume supplémentaire pourrait annuler son bénéfice.";
+
+    } else {
+
+        status.classList.add("red");
+
+        status.innerHTML =
+            "<strong>La perte de volume devient trop importante.</strong><br>" +
+            "Dans ce scénario, votre nouvelle marge serait inférieure à votre marge actuelle.";
+    }
+}
+
+calculateButton.addEventListener(
+    "click",
+    calculateMain
+);
+
+slider.addEventListener(
+    "input",
+    updateScenario
+);
+
+</script>
+
+</body>
+</html>
