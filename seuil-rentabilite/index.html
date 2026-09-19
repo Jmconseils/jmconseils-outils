@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Calculateur de seuil de rentabilité - JM Conseils</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        color: #222;
+    }
+
+    .calculator {
+        max-width: 850px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+        margin-top: 0;
+        font-size: 30px;
+    }
+
+    .intro {
+        color: #666;
+        margin-bottom: 30px;
+        line-height: 1.5;
+    }
+
+    .field {
+        margin-bottom: 22px;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 7px;
+    }
+
+    .help {
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 8px;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 17px;
+    }
+
+    button {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 8px;
+        font-size: 17px;
+        font-weight: bold;
+        cursor: pointer;
+        background: #222;
+        color: white;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+    #results {
+        display: none;
+        margin-top: 35px;
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .result-card {
+        padding: 20px;
+        background: #f5f5f5;
+        border-radius: 10px;
+    }
+
+    .result-label {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 6px;
+    }
+
+    .result-value {
+        font-size: 25px;
+        font-weight: bold;
+    }
+
+    .status {
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        line-height: 1.5;
+    }
+
+    .green {
+        background: #e8f5e9;
+        color: #1b5e20;
+    }
+
+    .orange {
+        background: #fff3e0;
+        color: #8a4b00;
+    }
+
+    .red {
+        background: #ffebee;
+        color: #b71c1c;
+    }
+
+    .disclaimer {
+        margin-top: 25px;
+        font-size: 12px;
+        color: #777;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 650px) {
+        .calculator {
+            margin: 10px;
+            padding: 20px;
+        }
+
+        .results-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+    <h1>Calculez votre seuil de rentabilité</h1>
+
+    <p class="intro">
+        Découvrez le chiffre d'affaires minimum que votre entreprise doit
+        réaliser pour couvrir l'ensemble de ses charges.
+    </p>
+
+    <div class="field">
+        <label for="revenue">Chiffre d'affaires annuel</label>
+        <div class="help">Votre chiffre d'affaires annuel hors TVA.</div>
+        <input id="revenue" type="number" min="0" placeholder="Ex. 250000">
+    </div>
+
+    <div class="field">
+        <label for="variable">Charges variables annuelles</label>
+        <div class="help">
+            Achats, matières premières, sous-traitance directement liée aux ventes,
+            commissions...
+        </div>
+        <input id="variable" type="number" min="0" placeholder="Ex. 100000">
+    </div>
+
+    <div class="field">
+        <label for="fixed">Charges fixes annuelles</label>
+        <div class="help">
+            Loyers, salaires fixes, assurances, abonnements, comptabilité...
+        </div>
+        <input id="fixed" type="number" min="0" placeholder="Ex. 90000">
+    </div>
+
+    <button onclick="calculate()">Calculer ma rentabilité</button>
+
+    <div id="results">
+
+        <h2>Votre résultat</h2>
+
+        <div class="results-grid">
+
+            <div class="result-card">
+                <div class="result-label">Seuil de rentabilité annuel</div>
+                <div class="result-value" id="breakEven"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-label">CA minimum mensuel</div>
+                <div class="result-value" id="monthly"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-label">Taux de marge sur coûts variables</div>
+                <div class="result-value" id="marginRate"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-label">Marge de sécurité</div>
+                <div class="result-value" id="safety"></div>
+            </div>
+
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <p class="disclaimer">
+            Ces résultats constituent une estimation indicative basée sur les
+            données renseignées et ne remplacent pas une analyse comptable,
+            financière ou fiscale complète.
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+
+function euro(value) {
+    return new Intl.NumberFormat(
+        'fr-BE',
+        {
+            style: 'currency',
+            currency: 'EUR',
+            maximumFractionDigits: 0
+        }
+    ).format(value);
+}
+
+function calculate() {
+
+    const revenue = Number(document.getElementById('revenue').value);
+    const variable = Number(document.getElementById('variable').value);
+    const fixed = Number(document.getElementById('fixed').value);
+
+    if (!revenue || revenue <= 0) {
+        alert("Veuillez renseigner votre chiffre d'affaires.");
+        return;
+    }
+
+    if (variable < 0 || fixed < 0) {
+        alert("Les charges ne peuvent pas être négatives.");
+        return;
+    }
+
+    if (variable >= revenue) {
+        alert(
+            "Vos charges variables doivent être inférieures à votre chiffre d'affaires pour calculer un seuil de rentabilité."
+        );
+        return;
+    }
+
+    const contributionMargin = revenue - variable;
+    const marginRate = contributionMargin / revenue;
+
+    const breakEven = fixed / marginRate;
+    const monthlyBreakEven = breakEven / 12;
+
+    const safetyMargin = revenue - breakEven;
+    const safetyPercentage = safetyMargin / breakEven;
+
+    document.getElementById('breakEven').textContent = euro(breakEven);
+    document.getElementById('monthly').textContent = euro(monthlyBreakEven);
+
+    document.getElementById('marginRate').textContent =
+        (marginRate * 100).toFixed(1) + " %";
+
+    document.getElementById('safety').textContent =
+        euro(safetyMargin);
+
+    const status = document.getElementById('status');
+
+    status.className = "status";
+
+    if (safetyMargin < 0) {
+
+        status.classList.add("red");
+
+        status.innerHTML =
+            "<strong>Votre chiffre d'affaires est actuellement inférieur à votre seuil de rentabilité.</strong><br>" +
+            "Sur la base des données renseignées, votre activité ne couvre pas encore l'ensemble de sa structure de coûts.";
+
+    } else if (safetyPercentage < 0.20) {
+
+        status.classList.add("orange");
+
+        status.innerHTML =
+            "<strong>Votre entreprise dépasse son seuil de rentabilité, mais sa marge de sécurité reste limitée.</strong><br>" +
+            "Une diminution du chiffre d'affaires ou une augmentation des charges pourrait rapidement réduire votre rentabilité.";
+
+    } else {
+
+        status.classList.add("green");
+
+        status.innerHTML =
+            "<strong>Votre chiffre d'affaires se situe au-dessus de votre seuil de rentabilité.</strong><br>" +
+            "Votre marge de sécurité estimée est de " +
+            euro(safetyMargin) + ".";
+
+    }
+
+    document.getElementById('results').style.display = "block";
+
+    document.getElementById('results').scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+</script>
+
+</body>
+</html>
