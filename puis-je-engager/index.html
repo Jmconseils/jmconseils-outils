@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puis-je engager ? - JM Conseils</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    color: #222;
+}
+
+.calculator {
+    max-width: 850px;
+    margin: 30px auto;
+    padding: 28px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+}
+
+h1 { margin-top: 0; }
+
+.intro {
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.field { margin-bottom: 18px; }
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.help {
+    color: #777;
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 17px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    border: 0;
+    border-radius: 8px;
+    background: #222;
+    color: white;
+    font-weight: bold;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+#results {
+    display: none;
+    margin-top: 30px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 14px;
+}
+
+.card {
+    padding: 18px;
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.label {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.value {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.status {
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 18px;
+    line-height: 1.5;
+}
+
+.green { background:#e8f5e9; color:#1b5e20; }
+.orange { background:#fff3e0; color:#8a4b00; }
+.red { background:#ffebee; color:#b71c1c; }
+
+.disclaimer {
+    font-size: 12px;
+    color: #777;
+    margin-top: 20px;
+    line-height: 1.5;
+}
+
+@media(max-width:650px) {
+    .calculator { margin:10px; padding:20px; }
+    .grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+<h1>Pouvez-vous vous permettre d'engager ?</h1>
+
+<p class="intro">
+Estimez le chiffre d'affaires supplémentaire nécessaire pour absorber
+le coût d'un recrutement et mesurez son impact sur votre résultat.
+</p>
+
+<div class="field">
+<label>Chiffre d'affaires annuel actuel</label>
+<input id="revenue" type="number" min="0" placeholder="Ex. 750000">
+</div>
+
+<div class="field">
+<label>Charges variables annuelles</label>
+<div class="help">
+Achats, matières premières, sous-traitance, commissions et autres coûts directement liés aux ventes.
+</div>
+<input id="variable" type="number" min="0" placeholder="Ex. 300000">
+</div>
+
+<div class="field">
+<label>Charges fixes annuelles actuelles</label>
+<input id="fixed" type="number" min="0" placeholder="Ex. 350000">
+</div>
+
+<div class="field">
+<label>Coût employeur annuel du recrutement</label>
+<div class="help">
+Salaire, cotisations patronales, avantages, assurances et autres coûts liés au poste.
+</div>
+<input id="employee" type="number" min="0" placeholder="Ex. 55000">
+</div>
+
+<div class="field">
+<label>CA annuel supplémentaire attendu grâce à ce recrutement</label>
+<div class="help">
+Indiquez 0 si le poste ne génère pas directement de chiffre d'affaires.
+</div>
+<input id="extraRevenue" type="number" min="0" placeholder="Ex. 80000">
+</div>
+
+<button onclick="calculate()">Tester le recrutement</button>
+
+<div id="results">
+
+<h2>Résultat de la simulation</h2>
+
+<div class="grid">
+
+<div class="card">
+<div class="label">Résultat actuel estimé</div>
+<div class="value" id="currentResult"></div>
+</div>
+
+<div class="card">
+<div class="label">CA supplémentaire minimum nécessaire</div>
+<div class="value" id="requiredRevenue"></div>
+</div>
+
+<div class="card">
+<div class="label">Résultat estimé après recrutement</div>
+<div class="value" id="futureResult"></div>
+</div>
+
+<div class="card">
+<div class="label">Impact estimé du recrutement</div>
+<div class="value" id="impact"></div>
+</div>
+
+</div>
+
+<div id="status" class="status"></div>
+
+<p class="disclaimer">
+Cette simulation utilise une approximation basée sur votre taux actuel de marge sur coûts variables.
+Elle ne remplace pas une analyse détaillée de la masse salariale, de la trésorerie,
+de la fiscalité ou du financement du recrutement.
+</p>
+
+</div>
+
+</div>
+
+<script>
+function euro(value) {
+    return new Intl.NumberFormat('fr-BE', {
+        style: 'currency',
+        currency: 'EUR',
+        maximumFractionDigits: 0
+    }).format(value);
+}
+
+function calculate() {
+    const revenue = Number(document.getElementById('revenue').value);
+    const variable = Number(document.getElementById('variable').value);
+    const fixed = Number(document.getElementById('fixed').value);
+    const employee = Number(document.getElementById('employee').value);
+    const extraRevenue = Number(document.getElementById('extraRevenue').value || 0);
+
+    if (revenue <= 0) {
+        alert("Veuillez renseigner votre chiffre d'affaires.");
+        return;
+    }
+
+    if (variable >= revenue) {
+        alert("Les charges variables doivent être inférieures au chiffre d'affaires.");
+        return;
+    }
+
+    const marginRate = (revenue - variable) / revenue;
+
+    const currentResult = revenue - variable - fixed;
+
+    const additionalMargin = extraRevenue * marginRate;
+
+    const futureResult =
+        currentResult
+        + additionalMargin
+        - employee;
+
+    const requiredRevenue = employee / marginRate;
+
+    const impact = futureResult - currentResult;
+
+    document.getElementById('currentResult').textContent = euro(currentResult);
+    document.getElementById('requiredRevenue').textContent = euro(requiredRevenue);
+    document.getElementById('futureResult').textContent = euro(futureResult);
+    document.getElementById('impact').textContent = euro(impact);
+
+    const status = document.getElementById('status');
+    status.className = "status";
+
+    if (futureResult < 0) {
+        status.classList.add("red");
+
+        status.innerHTML =
+        "<strong>Le recrutement fragiliserait votre résultat dans ce scénario.</strong><br>" +
+        "Avec les hypothèses renseignées, le chiffre d'affaires supplémentaire attendu ne couvre pas suffisamment le coût du poste.";
+
+    } else if (impact < 0) {
+        status.classList.add("orange");
+
+        status.innerHTML =
+        "<strong>Le recrutement semble absorbable, mais réduit votre résultat.</strong><br>" +
+        "Votre entreprise resterait positive dans cette simulation, avec une rentabilité toutefois inférieure à la situation actuelle.";
+
+    } else {
+        status.classList.add("green");
+
+        status.innerHTML =
+        "<strong>Le recrutement est couvert dans ce scénario.</strong><br>" +
+        "Le chiffre d'affaires supplémentaire attendu génère suffisamment de marge pour absorber le coût estimé du poste.";
+    }
+
+    document.getElementById('results').style.display = "block";
+}
+</script>
+
+</body>
+</html>
