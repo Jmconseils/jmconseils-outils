@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Diagnostic financier PME - JM Conseils</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    color: #222;
+}
+
+.tool {
+    max-width: 920px;
+    margin: 30px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 30px;
+}
+
+h2 {
+    margin-top: 34px;
+}
+
+.intro {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
+
+.section {
+    background: #f7f7f7;
+    padding: 22px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.section-help {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 18px;
+}
+
+.field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.help {
+    color: #777;
+    font-size: 12px;
+    line-height: 1.45;
+    margin-bottom: 7px;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 17px;
+    background: white;
+}
+
+.highlight-field {
+    border: 1px solid #bbb;
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 18px;
+}
+
+button {
+    width: 100%;
+    padding: 16px;
+    border: 0;
+    border-radius: 8px;
+    background: #222;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#results {
+    display: none;
+    margin-top: 40px;
+}
+
+.hero {
+    padding: 30px;
+    border-radius: 14px;
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.hero-label {
+    font-size: 15px;
+}
+
+.hero-value {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.hero-monthly {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.hero-text {
+    max-width: 680px;
+    margin: 15px auto 0;
+    line-height: 1.55;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 14px;
+}
+
+.card {
+    padding: 19px;
+    background: #f5f5f5;
+    border-radius: 11px;
+    border-left: 5px solid #777;
+}
+
+.card.green-card { border-left-color:#2e7d32; }
+.card.orange-card { border-left-color:#ef6c00; }
+.card.red-card { border-left-color:#c62828; }
+.card.neutral-card { border-left-color:#555; }
+
+.card-number {
+    font-size: 12px;
+    color: #888;
+}
+
+.card-title {
+    font-size: 14px;
+    color: #555;
+    margin: 4px 0 7px;
+}
+
+.card-value {
+    font-size: 27px;
+    font-weight: bold;
+}
+
+.card-secondary {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.45;
+    margin-top: 7px;
+}
+
+.green {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+.orange {
+    background: #fff3e0;
+    color: #8a4b00;
+}
+
+.red {
+    background: #ffebee;
+    color: #b71c1c;
+}
+
+.summary {
+    margin-top: 24px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    padding: 22px;
+    line-height: 1.6;
+}
+
+.priority {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 10px;
+}
+
+.priority-title {
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.priority-text {
+    color: #555;
+    line-height: 1.5;
+}
+
+.disclaimer {
+    font-size: 12px;
+    color: #777;
+    line-height: 1.5;
+    margin-top: 25px;
+}
+
+@media(max-width:700px) {
+    .tool {
+        margin: 10px;
+        padding: 20px;
+    }
+
+    .form-grid,
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-value {
+        font-size: 36px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="tool">
+
+<h1>Transformez vos comptes en 7 indicateurs utiles</h1>
+
+<p class="intro">
+Recopiez quelques chiffres de votre compte de résultats et de votre bilan.
+JM Conseils les transforme en indicateurs simples pour comprendre votre
+rentabilité, votre seuil minimum de chiffre d'affaires et la solidité
+financière de votre entreprise.
+</p>
+
+
+<!-- COMPTE DE RESULTATS -->
+
+<div class="section">
+
+<div class="section-title">
+1. Votre compte de résultats
+</div>
+
+<div class="section-help">
+Prenez votre dernier exercice comptable complet. Les montants doivent idéalement
+être repris hors TVA.
+</div>
+
+<div class="form-grid">
+
+<div class="field">
+<label>Chiffre d'affaires</label>
+<div class="help">
+Ventes et prestations réalisées sur l'exercice.
+</div>
+<input id="revenue" type="number" min="0" placeholder="Ex. 500000">
+</div>
+
+
+<div class="field">
+<label>Achats, marchandises et matières</label>
+<div class="help">
+Matériaux, marchandises, matières premières et achats directement nécessaires à votre activité.
+</div>
+<input id="purchases" type="number" min="0" placeholder="Ex. 120000">
+</div>
+
+
+<div class="field">
+<label>Services et biens divers</label>
+<div class="help">
+Loyer, énergie, véhicules, téléphone, comptable, sous-traitance,
+intérim, assurances, publicité...
+</div>
+<input id="services" type="number" min="0" placeholder="Ex. 95000">
+</div>
+
+
+<div class="field">
+<label>Personnel et charges sociales</label>
+<div class="help">
+Salaires, cotisations patronales et autres frais de personnel.
+</div>
+<input id="staff" type="number" min="0" placeholder="Ex. 180000">
+</div>
+
+
+<div class="field">
+<label>Amortissements</label>
+<div class="help">
+Amortissements comptabilisés sur les véhicules, machines,
+matériel, bâtiments...
+</div>
+<input id="depreciation" type="number" min="0" placeholder="Ex. 25000">
+</div>
+
+
+<div class="field">
+<label>Autres charges d'exploitation</label>
+<div class="help">
+Autres charges professionnelles non reprises ci-dessus.
+</div>
+<input id="otherOperating" type="number" min="0" placeholder="Ex. 10000">
+</div>
+
+
+<div class="field">
+<label>Résultat net</label>
+<div class="help">
+Bénéfice ou perte finale de l'exercice.
+Vous pouvez inscrire un montant négatif.
+</div>
+<input id="netResult" type="number" placeholder="Ex. 32000">
+</div>
+
+</div>
+
+
+<div class="highlight-field">
+
+<label>
+Dans les « services et biens divers », combien est directement lié à vos ventes ou chantiers ?
+</label>
+
+<div class="help">
+Posez-vous cette question : <strong>si je n'avais aucune vente ou aucun chantier pendant un mois,
+quelle partie de ces dépenses disparaîtrait également ?</strong><br><br>
+
+Exemples : sous-traitance par chantier, transport facturé selon l'activité,
+intérim directement lié à la production...<br><br>
+
+Si vous ne savez pas, laissez 0 €. Le calcul sera simplement plus prudent.
+</div>
+
+<input
+    id="variableServices"
+    type="number"
+    min="0"
+    placeholder="Ex. 30000"
+>
+
+</div>
+
+</div>
+
+
+<!-- BILAN -->
+
+<div class="section">
+
+<div class="section-title">
+2. Votre bilan
+</div>
+
+<div class="section-help">
+Reprenez les montants à la clôture du même exercice.
+</div>
+
+<div class="form-grid">
+
+<div class="field">
+<label>Trésorerie disponible</label>
+<div class="help">
+Comptes bancaires et liquidités disponibles.
+</div>
+<input id="cash" type="number" min="0" placeholder="Ex. 45000">
+</div>
+
+
+<div class="field">
+<label>Créances clients</label>
+<div class="help">
+Factures et montants que vos clients doivent encore vous payer.
+</div>
+<input id="receivables" type="number" min="0" placeholder="Ex. 65000">
+</div>
+
+
+<div class="field">
+<label>Stocks</label>
+<div class="help">
+Valeur comptable des marchandises, matières et produits en stock.
+</div>
+<input id="stocks" type="number" min="0" placeholder="Ex. 25000">
+</div>
+
+
+<div class="field">
+<label>Dettes à moins d'un an</label>
+<div class="help">
+Fournisseurs, dettes fiscales/sociales, emprunts et autres dettes
+à payer dans les 12 mois.
+</div>
+<input id="shortDebt" type="number" min="0" placeholder="Ex. 110000">
+</div>
+
+
+<div class="field">
+<label>Fonds propres</label>
+<div class="help">
+Capital, réserves et résultats accumulés.
+Le montant peut être négatif.
+</div>
+<input id="equity" type="number" placeholder="Ex. 120000">
+</div>
+
+
+<div class="field">
+<label>Total du bilan</label>
+<div class="help">
+Total de l'actif ou du passif.
+</div>
+<input id="totalAssets" type="number" min="0" placeholder="Ex. 400000">
+</div>
+
+</div>
+
+</div>
+
+
+<button id="calculateButton">
+Analyser mon entreprise
+</button>
+
+
+<!-- RESULTATS -->
+
+<div id="results">
+
+<h2>Votre diagnostic</h2>
+
+
+<div id="breakEvenHero" class="hero">
+
+<div class="hero-label">
+Votre chiffre d'affaires minimum estimé
+</div>
+
+<div class="hero-value" id="breakEven"></div>
+
+<div class="hero-monthly" id="breakEvenMonthly"></div>
+
+<div class="hero-text" id="breakEvenText"></div>
+
+</div>
+
+
+<div class="results-grid">
+
+
+<div class="card neutral-card">
+
+<div class="card-number">Indicateur 1</div>
+
+<div class="card-title">
+Marge après coûts directement liés à l'activité
+</div>
+
+<div class="card-value" id="directMarginRate"></div>
+
+<div class="card-secondary" id="directMarginText"></div>
+
+</div>
+
+
+<div class="card" id="breakEvenCard">
+
+<div class="card-number">Indicateur 2</div>
+
+<div class="card-title">
+Seuil de rentabilité estimé
+</div>
+
+<div class="card-value" id="breakEvenCardValue"></div>
+
+<div class="card-secondary">
+Chiffre d'affaires annuel minimum estimé pour couvrir la structure actuelle.
+</div>
+
+</div>
+
+
+<div class="card" id="safetyCard">
+
+<div class="card-number">Indicateur 3</div>
+
+<div class="card-title">
+Marge de sécurité
+</div>
+
+<div class="card-value" id="safetyMargin"></div>
+
+<div class="card-secondary" id="safetyText"></div>
+
+</div>
+
+
+<div class="card" id="profitCard">
+
+<div class="card-number">Indicateur 4</div>
+
+<div class="card-title">
+Rentabilité nette
+</div>
+
+<div class="card-value" id="netMargin"></div>
+
+<div class="card-secondary" id="netMarginText"></div>
+
+</div>
+
+
+<div class="card" id="cashCard">
+
+<div class="card-number">Indicateur 5</div>
+
+<div class="card-title">
+Coussin de trésorerie
+</div>
+
+<div class="card-value" id="cashRunway"></div>
+
+<div class="card-secondary" id="cashRunwayText"></div>
+
+</div>
+
+
+<div class="card" id="liquidityCard">
+
+<div class="card-number">Indicateur 6</div>
+
+<div class="card-title">
+Liquidité court terme
+</div>
+
+<div class="card-value" id="liquidity"></div>
+
+<div class="card-secondary" id="liquidityText"></div>
+
+</div>
+
+
+<div class="card" id="solvencyCard">
+
+<div class="card-number">Indicateur 7</div>
+
+<div class="card-title">
+Solvabilité
+</div>
+
+<div class="card-value" id="solvency"></div>
+
+<div class="card-secondary" id="solvencyText"></div>
+
+</div>
+
+</div>
+
+
+<div class="summary" id="summary"></div>
+
+
+<h2>Vos 3 priorités</h2>
+
+<div id="priorityList"></div>
+
+
+<p class="disclaimer">
+Ce diagnostic fournit une estimation simplifiée à partir des informations
+renseignées. La distinction entre coûts directement liés à l'activité et coûts
+de structure peut différer selon votre métier. Les seuils d'interprétation sont
+généraux et doivent être adaptés au secteur, à la saisonnalité et à la situation
+particulière de l'entreprise. Cet outil ne remplace pas une analyse comptable,
+fiscale ou financière professionnelle.
+</p>
+
+</div>
+
+</div>
+
+
+<script>
+
+function euro(value) {
+    return new Intl.NumberFormat("fr-BE", {
+        style: "currency",
+        currency: "EUR",
+        maximumFractionDigits: 0
+    }).format(value);
+}
+
+function pct(value) {
+    return (value * 100).toFixed(1) + " %";
+}
+
+function field(id) {
+    return Number(document.getElementById(id).value || 0);
+}
+
+function setCardStatus(id, status) {
+
+    const card = document.getElementById(id);
+
+    card.classList.remove(
+        "green-card",
+        "orange-card",
+        "red-card",
+        "neutral-card"
+    );
+
+    card.classList.add(status + "-card");
+}
+
+
+document
+.getElementById("calculateButton")
+.addEventListener("click", function () {
+
+
+    const revenue = field("revenue");
+    const purchases = field("purchases");
+
+    const services = field("services");
+    const variableServices = field("variableServices");
+
+    const staff = field("staff");
+    const depreciation = field("depreciation");
+    const otherOperating = field("otherOperating");
+
+    const netResult = field("netResult");
+
+    const cash = field("cash");
+    const receivables = field("receivables");
+    const stocks = field("stocks");
+    const shortDebt = field("shortDebt");
+
+    const equity = field("equity");
+    const totalAssets = field("totalAssets");
+
+
+    /*
+    VALIDATIONS
+    */
+
+    if (revenue <= 0) {
+
+        alert("Veuillez renseigner votre chiffre d'affaires.");
+
+        return;
+    }
+
+
+    if (variableServices > services) {
+
+        alert(
+            "La partie directement liée à l'activité ne peut pas être supérieure au total des services et biens divers."
+        );
+
+        return;
+    }
+
+
+    const directCosts =
+        purchases + variableServices;
+
+
+    if (directCosts >= revenue) {
+
+        alert(
+            "Les achats et coûts directement liés à l'activité sont supérieurs ou égaux au chiffre d'affaires. Vérifiez les montants introduits."
+        );
+
+        return;
+    }
+
+
+    if (totalAssets <= 0) {
+
+        alert("Veuillez renseigner le total du bilan.");
+
+        return;
+    }
+
+
+
+    /*
+    1 - MARGE APRES COUTS DIRECTS
+    */
+
+    const directMargin =
+        revenue - directCosts;
+
+    const directMarginRate =
+        directMargin / revenue;
+
+
+
+    /*
+    CHARGES DE STRUCTURE
+    */
+
+    const fixedServices =
+        services - variableServices;
+
+    const structureCosts =
+        fixedServices +
+        staff +
+        depreciation +
+        otherOperating;
+
+
+
+    /*
+    2 - SEUIL DE RENTABILITE
+    */
+
+    const breakEven =
+        structureCosts / directMarginRate;
+
+    const monthlyBreakEven =
+        breakEven / 12;
+
+
+
+    /*
+    3 - MARGE DE SECURITE
+    */
+
+    const safetyMargin =
+        revenue - breakEven;
+
+    const safetyRate =
+        safetyMargin / revenue;
+
+
+
+    /*
+    4 - RENTABILITE NETTE
+    */
+
+    const netMargin =
+        netResult / revenue;
+
+
+
+    /*
+    5 - COUSSIN DE TRESORERIE
+    */
+
+    const monthlyStructureCosts =
+        structureCosts / 12;
+
+    let cashRunway = null;
+
+    if (monthlyStructureCosts > 0) {
+
+        cashRunway =
+            cash / monthlyStructureCosts;
+    }
+
+
+
+    /*
+    6 - LIQUIDITE
+    */
+
+    const simplifiedCurrentAssets =
+        cash + receivables + stocks;
+
+    let liquidity = null;
+
+    if (shortDebt > 0) {
+
+        liquidity =
+            simplifiedCurrentAssets / shortDebt;
+    }
+
+
+
+    /*
+    7 - SOLVABILITE
+    */
+
+    const solvency =
+        equity / totalAssets;
+
+
+
+    /*
+    HERO
+    */
+
+    document.getElementById("breakEven").textContent =
+        euro(breakEven);
+
+    document.getElementById("breakEvenMonthly").textContent =
+        "soit environ " +
+        euro(monthlyBreakEven) +
+        " de chiffre d'affaires par mois";
+
+
+    const hero =
+        document.getElementById("breakEvenHero");
+
+    hero.className =
+        "hero";
+
+
+    if (safetyMargin < 0) {
+
+        hero.classList.add("red");
+
+        document.getElementById("breakEvenText").innerHTML =
+            "Votre chiffre d'affaires actuel est inférieur d'environ <strong>" +
+            euro(Math.abs(safetyMargin)) +
+            "</strong> au niveau estimé nécessaire pour couvrir votre structure.";
+
+    }
+    else if (safetyRate < 0.15) {
+
+        hero.classList.add("orange");
+
+        document.getElementById("breakEvenText").innerHTML =
+            "Votre activité dépasse son seuil estimé, mais votre marge de sécurité reste limitée à environ <strong>" +
+            pct(safetyRate) +
+            "</strong> de votre chiffre d'affaires.";
+
+    }
+    else {
+
+        hero.classList.add("green");
+
+        document.getElementById("breakEvenText").innerHTML =
+            "Votre chiffre d'affaires dépasse votre seuil estimé d'environ <strong>" +
+            euro(safetyMargin) +
+            "</strong>.";
+    }
+
+
+
+    /*
+    INDICATEUR 1
+    */
+
+    document.getElementById("directMarginRate").textContent =
+        pct(directMarginRate);
+
+    document.getElementById("directMarginText").textContent =
+        "Après les achats et coûts directement liés à votre activité, il reste environ " +
+        (directMarginRate * 100).toFixed(1) +
+        " € sur 100 € de chiffre d'affaires pour payer votre structure et générer un bénéfice.";
+
+
+
+    /*
+    INDICATEUR 2
+    */
+
+    document.getElementById("breakEvenCardValue").textContent =
+        euro(breakEven);
+
+    if (safetyMargin < 0) {
+
+        setCardStatus("breakEvenCard","red");
+
+    }
+    else if (safetyRate < 0.15) {
+
+        setCardStatus("breakEvenCard","orange");
+
+    }
+    else {
+
+        setCardStatus("breakEvenCard","green");
+    }
+
+
+
+    /*
+    INDICATEUR 3
+    */
+
+    document.getElementById("safetyMargin").textContent =
+        euro(safetyMargin);
+
+    if (safetyMargin >= 0) {
+
+        document.getElementById("safetyText").textContent =
+            "Votre CA pourrait diminuer d'environ " +
+            pct(safetyRate) +
+            " avant d'atteindre le seuil estimé.";
+
+    }
+    else {
+
+        document.getElementById("safetyText").textContent =
+            "Votre activité se situe actuellement sous le seuil estimé.";
+    }
+
+
+    if (safetyRate < 0) {
+
+        setCardStatus("safetyCard","red");
+
+    }
+    else if (safetyRate < 0.15) {
+
+        setCardStatus("safetyCard","orange");
+
+    }
+    else {
+
+        setCardStatus("safetyCard","green");
+    }
+
+
+
+    /*
+    INDICATEUR 4
+    */
+
+    document.getElementById("netMargin").textContent =
+        pct(netMargin);
+
+    document.getElementById("netMarginText").textContent =
+        netResult >= 0
+        ? "Pour 100 € de chiffre d'affaires, votre entreprise conserve environ " +
+          (netMargin * 100).toFixed(1) +
+          " € de résultat net."
+        : "Votre dernier exercice se termine par une perte.";
+
+
+    if (netMargin < 0) {
+
+        setCardStatus("profitCard","red");
+
+    }
+    else if (netMargin < 0.05) {
+
+        setCardStatus("profitCard","orange");
+
+    }
+    else {
+
+        setCardStatus("profitCard","green");
+    }
+
+
+
+    /*
+    INDICATEUR 5
+    */
+
+    if (cashRunway !== null) {
+
+        document.getElementById("cashRunway").textContent =
+            cashRunway.toFixed(1) + " mois";
+
+        document.getElementById("cashRunwayText").textContent =
+            "Votre trésorerie représente environ " +
+            cashRunway.toFixed(1) +
+            " mois de charges de structure actuelles.";
+
+        if (cashRunway < 1) {
+
+            setCardStatus("cashCard","red");
+
+        }
+        else if (cashRunway < 3) {
+
+            setCardStatus("cashCard","orange");
+
+        }
+        else {
+
+            setCardStatus("cashCard","green");
+        }
+
+    }
+    else {
+
+        document.getElementById("cashRunway").textContent =
+            "N/A";
+
+        document.getElementById("cashRunwayText").textContent =
+            "Impossible à calculer avec les données fournies.";
+
+        setCardStatus("cashCard","neutral");
+    }
+
+
+
+    /*
+    INDICATEUR 6
+    */
+
+    if (liquidity !== null) {
+
+        document.getElementById("liquidity").textContent =
+            liquidity.toFixed(2);
+
+        document.getElementById("liquidityText").textContent =
+            "Pour 1 € de dette à moins d'un an, vous disposez d'environ " +
+            liquidity.toFixed(2) +
+            " € de trésorerie, créances et stocks.";
+
+        if (liquidity < 1) {
+
+            setCardStatus("liquidityCard","red");
+
+        }
+        else if (liquidity < 1.2) {
+
+            setCardStatus("liquidityCard","orange");
+
+        }
+        else {
+
+            setCardStatus("liquidityCard","green");
+        }
+
+    }
+    else {
+
+        document.getElementById("liquidity").textContent =
+            "Pas de dette CT";
+
+        document.getElementById("liquidityText").textContent =
+            "Aucune dette à moins d'un an n'a été renseignée.";
+
+        setCardStatus("liquidityCard","green");
+    }
+
+
+
+    /*
+    INDICATEUR 7
+    */
+
+    document.getElementById("solvency").textContent =
+        pct(solvency);
+
+    document.getElementById("solvencyText").textContent =
+        "Les fonds propres représentent environ " +
+        pct(solvency) +
+        " du total de votre bilan.";
+
+
+    if (solvency < 0.20) {
+
+        setCardStatus("solvencyCard","red");
+
+    }
+    else if (solvency < 0.30) {
+
+        setCardStatus("solvencyCard","orange");
+
+    }
+    else {
+
+        setCardStatus("solvencyCard","green");
+    }
+
+
+
+    /*
+    PRIORITES
+    */
+
+    const priorities = [];
+
+
+    if (safetyMargin < 0) {
+
+        priorities.push({
+            severity: 10,
+            title: "Retrouver votre seuil de rentabilité",
+            text:
+            "Votre chiffre d'affaires actuel semble insuffisant pour couvrir votre structure. Analysez en priorité les prix, les achats et les coûts de structure."
+        });
+
+    }
+    else if (safetyRate < 0.15) {
+
+        priorities.push({
+            severity: 7,
+            title: "Augmenter votre marge de sécurité",
+            text:
+            "Votre entreprise dépasse son seuil estimé, mais une baisse relativement limitée de l'activité pourrait absorber cette marge."
+        });
+    }
+
+
+    if (netMargin < 0.05) {
+
+        priorities.push({
+            severity: netMargin < 0 ? 10 : 7,
+            title: "Améliorer ce qui reste réellement à la fin de l'année",
+            text:
+            "Votre niveau de résultat net est faible par rapport au chiffre d'affaires. Les prix, achats et coûts de structure doivent être examinés."
+        });
+    }
+
+
+    if (cashRunway !== null && cashRunway < 3) {
+
+        priorities.push({
+            severity: cashRunway < 1 ? 9 : 6,
+            title: "Renforcer votre réserve de trésorerie",
+            text:
+            "Votre trésorerie représente moins de trois mois de charges de structure. Une baisse d'activité ou un retard client pourrait rapidement créer une tension."
+        });
+    }
+
+
+    if (liquidity !== null && liquidity < 1) {
+
+        priorities.push({
+            severity: 9,
+            title: "Sécuriser vos échéances à court terme",
+            text:
+            "Vos actifs disponibles à court terme ne couvrent pas entièrement vos dettes à moins d'un an."
+        });
+    }
+
+
+    if (solvency < 0.20) {
+
+        priorities.push({
+            severity: 8,
+            title: "Renforcer votre structure financière",
+            text:
+            "Le poids de vos fonds propres est faible par rapport à la taille de votre bilan, ce qui peut rendre l'entreprise plus sensible aux difficultés."
+        });
+    }
+
+
+    priorities.sort(
+        (a,b) => b.severity - a.severity
+    );
+
+
+    const priorityList =
+        document.getElementById("priorityList");
+
+    priorityList.innerHTML = "";
+
+
+    if (priorities.length === 0) {
+
+        priorityList.innerHTML = `
+            <div class="priority">
+                <div class="priority-title">
+                    Aucun signal majeur identifié
+                </div>
+
+                <div class="priority-text">
+                    Les principaux indicateurs calculés ne présentent
+                    pas de signal d'alerte majeur sur la base des
+                    informations renseignées.
+                </div>
+            </div>
+        `;
+
+    }
+    else {
+
+        priorities
+        .slice(0,3)
+        .forEach((priority,index) => {
+
+            const block =
+                document.createElement("div");
+
+            block.className =
+                "priority";
+
+            block.innerHTML = `
+                <div class="priority-title">
+                    ${index + 1}. ${priority.title}
+                </div>
+
+                <div class="priority-text">
+                    ${priority.text}
+                </div>
+            `;
+
+            priorityList.appendChild(block);
+        });
+    }
+
+
+
+    /*
+    SYNTHESE
+    */
+
+    let summary = "";
+
+
+    if (
+        safetyMargin > 0 &&
+        netMargin >= 0.05 &&
+        cashRunway !== null &&
+        cashRunway >= 3 &&
+        (liquidity === null || liquidity >= 1)
+    ) {
+
+        summary =
+        "<strong>Lecture générale :</strong> les principaux indicateurs renseignés présentent une situation globalement équilibrée. Votre priorité est surtout de préserver votre marge, votre trésorerie et votre niveau de charges.";
+
+    }
+    else {
+
+        summary =
+        "<strong>Lecture générale :</strong> votre entreprise présente plusieurs points qui méritent d'être surveillés. Commencez par les trois priorités ci-dessous plutôt que d'essayer d'améliorer tous les chiffres en même temps.";
+    }
+
+
+    document.getElementById("summary").innerHTML =
+        summary;
+
+
+    document.getElementById("results").style.display =
+        "block";
+
+
+    document.getElementById("results").scrollIntoView({
+        behavior:"smooth"
+    });
+
+});
+</script>
+
+</body>
+</html>
